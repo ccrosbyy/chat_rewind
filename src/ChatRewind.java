@@ -4,7 +4,7 @@ import java.util.Map;
 
 public class ChatRewind {
 
-    HashMap<String, HashMap<String, Integer>> stats = new HashMap<>();
+    HashMap<String, HashMap<GroupMember, Integer>> stats = new HashMap<>();
 
     public ChatRewind(){
         Chat chat = new Chat("messages/inbox/society_ekt-war5ua/message_1.json");
@@ -28,14 +28,14 @@ public class ChatRewind {
     public void gather_message_counts(Chat chat){
         stats.put("message counts", new HashMap<>());
         for (GroupMember member : chat.getMembers()) {
-            stats.get("message counts").put(member.getName(), member.messages.size());
+            stats.get("message counts").put(member, member.messages.size());
         }
     }
 
     public void gather_word_counts(Chat chat){
         stats.put("word counts", new HashMap<>());
         for (GroupMember member : chat.getMembers()) {
-            stats.get("word counts").put(member.getName(), member.getWordCount());
+            stats.get("word counts").put(member, member.getWordCount());
         }
     }
 
@@ -58,29 +58,29 @@ public class ChatRewind {
         stats.put("thumbs down reacts received", new HashMap<>());
         for (GroupMember member : chat.getMembers()){
             member.sortReacts();
-            stats.get("reacts sent").put(member.getName(), member.reactsSent.size());
-            stats.get("reacts received").put(member.getName(), member.reactsReceived.size());
-            stats.get("laugh reacts sent").put(member.getName(), member.laughReactsSent);
-            stats.get("laugh reacts received").put(member.getName(), member.laughReactsReceived);
-            stats.get("wow reacts sent").put(member.getName(), member.wowReactsSent);
-            stats.get("wow reacts received").put(member.getName(), member.wowReactsReceived);
-            stats.get("heart reacts sent").put(member.getName(), member.heartReactsSent);
-            stats.get("heart reacts received").put(member.getName(), member.heartReactsReceived);
-            stats.get("sad reacts sent").put(member.getName(), member.sadReactsSent);
-            stats.get("sad reacts received").put(member.getName(), member.sadReactsReceived);
-            stats.get("angry reacts sent").put(member.getName(), member.angryReactsSent);
-            stats.get("angry reacts received").put(member.getName(), member.angryReactsReceived);
-            stats.get("thumbs up reacts sent").put(member.getName(), member.thumbsUpReactsSent);
-            stats.get("thumbs up reacts received").put(member.getName(), member.thumbsUpReactsReceived);
-            stats.get("thumbs down reacts sent").put(member.getName(), member.thumbsDownReactsSent);
-            stats.get("thumbs down reacts received").put(member.getName(), member.thumbsDownReactsReceived);
+            stats.get("reacts sent").put(member, member.reactsSent.size());
+            stats.get("reacts received").put(member, member.reactsReceived.size());
+            stats.get("laugh reacts sent").put(member, member.laughReactsSent);
+            stats.get("laugh reacts received").put(member, member.laughReactsReceived);
+            stats.get("wow reacts sent").put(member, member.wowReactsSent);
+            stats.get("wow reacts received").put(member, member.wowReactsReceived);
+            stats.get("heart reacts sent").put(member, member.heartReactsSent);
+            stats.get("heart reacts received").put(member, member.heartReactsReceived);
+            stats.get("sad reacts sent").put(member, member.sadReactsSent);
+            stats.get("sad reacts received").put(member, member.sadReactsReceived);
+            stats.get("angry reacts sent").put(member, member.angryReactsSent);
+            stats.get("angry reacts received").put(member, member.angryReactsReceived);
+            stats.get("thumbs up reacts sent").put(member, member.thumbsUpReactsSent);
+            stats.get("thumbs up reacts received").put(member, member.thumbsUpReactsReceived);
+            stats.get("thumbs down reacts sent").put(member, member.thumbsDownReactsSent);
+            stats.get("thumbs down reacts received").put(member, member.thumbsDownReactsReceived);
         }
     }
 
     public void print_raw_stat(String stat){
         System.out.println("\n" + stat.toUpperCase() + ":");
-        for (Map.Entry<String,Integer> item : stats.get(stat).entrySet()){
-            System.out.println(item.getKey() + ": " + item.getValue());
+        for (Map.Entry<GroupMember,Integer> item : stats.get(stat).entrySet()){
+            System.out.println(item.getKey().getName() + ": " + item.getValue());
         }
     }
 
