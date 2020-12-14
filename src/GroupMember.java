@@ -1,9 +1,12 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class GroupMember {
 
     String firstname, lastname, fullname;
     ArrayList<Message> messages = new ArrayList<Message>();
+
+    HashMap<String, Integer> word_freq = new HashMap<>();
 
     Message longestMessage;
 
@@ -121,6 +124,10 @@ public class GroupMember {
 
     public void assignTitle(String title){
         titles.add(title);
+    }
+
+    public ArrayList<Message> getMessages(){
+        return messages;
     }
 
 

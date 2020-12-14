@@ -1,10 +1,13 @@
 import java.lang.reflect.Member;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 public class ChatRewind {
 
     HashMap<String, HashMap<GroupMember, Integer>> stats = new HashMap<>();
+
+    HashMap<String, Integer> word_freq = new HashMap<>();
 
     public ChatRewind(){
         Chat chat = new Chat("messages/inbox/society_ekt-war5ua/message_1.json");
@@ -15,7 +18,14 @@ public class ChatRewind {
         gather_word_counts(chat);
         gather_react_counts(chat);
         gather_longest_messages(chat);
-        print_raw_stat("longest message");
+        //print_raw_stat("longest message");
+        calculate_word_frequency(chat);
+        gather_frequent_words(chat);
+
+        /*for (GroupMember member : chat.members){
+            System.out.println("\n" + member.getName() + "'s longest message: \n"
+                    + member.longestMessage.getContent() + "\n");
+        }*/
         //chat.print_msgs();
         //print_raw_stat("message count");
         //print_raw_stat("word count");
@@ -25,6 +35,58 @@ public class ChatRewind {
         //print_raw_stat("laugh reacts received");
         //print_react_counts(chat);
 
+    }
+
+    public void gather_frequent_words(Chat chat){
+        stats.put("most frequent word", new HashMap<>());
+        for (GroupMember member : chat.getMembers()) {
+
+        }
+    }
+
+    public void calculate_word_frequency(Chat chat){
+        for (Message message : chat.getMessages()){
+            if (message.content != null) {
+                GroupMember sender = message.getSender();
+
+                StringTokenizer st = new StringTokenizer(message.content);
+                while (st.hasMoreTokens()) {
+                    String current = st.nextToken();
+
+                    //remove leading weird characters so that counting is accurate
+                    while ((current.startsWith("\"") || current.startsWith("'") || current.startsWith(".")
+                            || current.startsWith("(") || current.startsWith(")") || current.startsWith("*"))
+                            && current.length() > 1) {
+                            current = current.substring(1);
+                    }
+
+                    //remove trailing weird characters so that counting is accurate
+                    while (current.endsWith("\"") || current.endsWith("'") || current.endsWith("?")
+                            || current.endsWith(".") || current.endsWith(":") || current.endsWith("*")
+                            || current.endsWith("!") || current.endsWith(")") || current.endsWith("(")) {
+                        if (current.length() > 1)
+                            current = current.substring(0, current.length() - 1);
+                        else
+                            break;
+                    }
+
+                    //convert everything to lowercase so that counting is accurate
+                    current = current.toLowerCase();
+
+                    //for total word freq
+                    if (word_freq.containsKey(current))
+                        word_freq.put(current, word_freq.get(current) + 1);
+                    else
+                        word_freq.put(current, 1);
+
+                    //for member word freq
+                    if (sender.word_freq.containsKey(current))
+                        sender.word_freq.put(current, sender.word_freq.get(current) + 1);
+                    else
+                        sender.word_freq.put(current, 1);
+                }
+            }
+        }
     }
 
     /**
