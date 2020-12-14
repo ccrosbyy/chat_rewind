@@ -1,5 +1,7 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 public class GroupMember {
 
@@ -7,6 +9,8 @@ public class GroupMember {
     ArrayList<Message> messages = new ArrayList<Message>();
 
     HashMap<String, Integer> word_freq = new HashMap<>();
+
+    String[] topWords = new String[20];
 
     Message longestMessage;
 
@@ -130,6 +134,29 @@ public class GroupMember {
         return messages;
     }
 
+    /**
+     *
+     * @param ignore list of boring words that we don't want in the top 10 list
+     */
+    public void findTopTenWords(String[] ignore){
+        for (Map.Entry<String,Integer> item : word_freq.entrySet()){
+            // skip stupid words
+            if (Arrays.asList(ignore).contains(item.getKey()))
+                continue;
+
+            for (int i = 0; i < topWords.length; i++){
+                if (topWords[i] == null || item.getValue() > word_freq.get(topWords[i])){
+                    if (topWords[i] != null) {
+                        for (int j = topWords.length - 1; j > i; j--) {
+                            topWords[j] = topWords[j - 1];
+                        }
+                    }
+                    topWords[i] = item.getKey();
+                    break;
+                }
+            }
+        }
+    }
 
     public void findLongestMessage(){
         int len = -1;

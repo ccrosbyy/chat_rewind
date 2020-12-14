@@ -1,4 +1,5 @@
 import java.lang.reflect.Member;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -8,6 +9,22 @@ public class ChatRewind {
     HashMap<String, HashMap<GroupMember, Integer>> stats = new HashMap<>();
 
     HashMap<String, Integer> word_freq = new HashMap<>();
+
+    String[] words_to_ignore = {"a", "an", "the", "be", "can", "could", "do", "have", "not", "that", "it", "its",
+            "it's", "that's", "there", "but", "when", "u", "in", "and", "is", "to", "i", "you", "my", "for", "just"
+            ,"this", "i'll", "of", "so", "i'm", "me", "on", "was", "as", "with", "if", "what", "we", "at", "your"
+            ,"you're", "are", "up", "get", "don't", "all", "one", "or", "how", "out", "go", "he", "she"
+            , "her", "about", "then", "know", "they", "too", "got", "gonna", "like", "now", "from", "also", "want"
+            , "really", "why", "did", "didn't", "think", "yea", "yeah", "no", "still", "good", "yes", "haha"
+            , "them", "oh", "would", "come", "more", "cause", "here", "were", "him", "had", "will", "even", "tho"
+            , "has", "say", "his", "because", "wanna", ":", "they're", "after", "am", "need", "much", "going"
+            , "let", "dont", "thats", "see", "sounds", "than", "over", "been", "some", "into", "way", "doing"
+            , "their", "though", "he's", "only", "lot", "off", "can't", "said", "1", "2", "3", "4", "5", "6"
+            ,  "might", "sent", "should", "feel", "right", "back", "well", "someone", "something"
+            , "youre", "ive", "probs", "very", "make", "next", "us", "what's", "coming", "take", "wait", "w"
+            , "i've", "our", "we're", "day", "those", "better", "two", "one", "she's", "few", "by", "rn", "tell"
+            , "before", "doesn't", "does", "where", "things", "who", "asked"};
+
 
     public ChatRewind(){
         Chat chat = new Chat("messages/inbox/society_ekt-war5ua/message_1.json");
@@ -20,7 +37,22 @@ public class ChatRewind {
         gather_longest_messages(chat);
         //print_raw_stat("longest message");
         calculate_word_frequency(chat);
-        gather_frequent_words(chat);
+        most_frequent_words(chat);
+        //gather_frequent_words(chat);
+
+         //GET/PRINT TOP TEN WORDS FOR EACH PERSON
+        for (int j = 0; j < 8; j++) {
+            chat.getMembers().get(j).findTopTenWords(words_to_ignore);
+            System.out.println(chat.members.get(j).getName() +":");
+            for (int i = 0; i < 20; i++) {
+                System.out.print(chat.getMembers().get(j).topWords[i] + "   ");
+            }
+            System.out.print("\n");
+            for (int i = 0; i < 20; i++) {
+                System.out.print(chat.getMembers().get(j).word_freq.get(chat.getMembers().get(j).topWords[i]) + "   ");
+            }
+            System.out.println("\n");
+        }
 
         /*for (GroupMember member : chat.members){
             System.out.println("\n" + member.getName() + "'s longest message: \n"
@@ -36,6 +68,34 @@ public class ChatRewind {
         //print_react_counts(chat);
 
     }
+
+    public void most_frequent_words(Chat chat){
+
+        String[] topWords = new String[20];
+
+        for (Map.Entry<String,Integer> item : word_freq.entrySet()){
+            // skip stupid words
+            if (Arrays.asList(words_to_ignore).contains(item.getKey()))
+                continue;
+
+            for (int i = 0; i < topWords.length; i++){
+                if (topWords[i] == null || item.getValue() > word_freq.get(topWords[i])){
+                    if (topWords[i] != null) {
+                        for (int j = topWords.length - 1; j > i; j--) {
+                            topWords[j] = topWords[j - 1];
+                        }
+                    }
+                    topWords[i] = item.getKey();
+                    break;
+                }
+            }
+        }
+        for (int i = 0; i < 20; i++) {
+            System.out.print(topWords[i] + "   ");
+        }
+        System.out.println("\n");
+    }
+
 
     public void gather_frequent_words(Chat chat){
         stats.put("most frequent word", new HashMap<>());
@@ -63,7 +123,8 @@ public class ChatRewind {
                     //remove trailing weird characters so that counting is accurate
                     while (current.endsWith("\"") || current.endsWith("'") || current.endsWith("?")
                             || current.endsWith(".") || current.endsWith(":") || current.endsWith("*")
-                            || current.endsWith("!") || current.endsWith(")") || current.endsWith("(")) {
+                            || current.endsWith("!") || current.endsWith(")") || current.endsWith("(")
+                            || current.endsWith(",")) {
                         if (current.length() > 1)
                             current = current.substring(0, current.length() - 1);
                         else

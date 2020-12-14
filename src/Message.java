@@ -51,6 +51,13 @@ public class Message {
         dic = dic.replaceAll("\u00e2\u0080\u0099", "'");
         dic = dic.replaceAll("\u00e2\u0080\u009c", "\"");
         dic = dic.replaceAll("\u00e2\u0080\u009d", "\"");
+        dic = dic.replaceAll("ð\u009F\u0098\u0082", "\uD83D\uDE02");
+        dic = dic.replaceAll("ð\u009F\u008D\u0086", "\uD83C\uDF46");
+        dic = dic.replaceAll("ð\u009F\u0098®", "\uD83D\uDE2E");
+        dic = dic.replaceAll("ð\u009F\u0091\u008C", "\uD83D\uDC4C");
+        dic = dic.replaceAll("ð\u009F\u0096\u0095", "\uD83D\uDD95");
+        dic = dic.replaceAll("ð\u009F\u0092©", "\uD83D\uDCA9");
+        dic = dic.replaceAll("ð\u009F\u0098³", "\uD83D\uDE33");
         return dic;
     }
 
