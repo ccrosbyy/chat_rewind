@@ -14,6 +14,9 @@ public class Message {
 
     public Message(JSONObject obj){
         content = (String)obj.get("content");
+        if (content != null) {
+            content = message_decoder(content);
+        }
         type = (String)obj.get("type");
         timestamp_ms = (long)obj.get("timestamp_ms");
         senderName = (String)obj.get("sender_name");
@@ -34,6 +37,21 @@ public class Message {
                 reactions.add(new Reaction(react));
             }
         }
+    }
+
+    /**
+     * I need to figure out how to actually fix the encoding on this shit
+     * cause this is too tedious for every special char
+     * https://stackoverflow.com/questions/50008296/facebook-json-badly-encoded
+     * @param message
+     * @return
+     */
+    String message_decoder(String message){
+        String dic = message;
+        dic = dic.replaceAll("\u00e2\u0080\u0099", "'");
+        dic = dic.replaceAll("\u00e2\u0080\u009c", "\"");
+        dic = dic.replaceAll("\u00e2\u0080\u009d", "\"");
+        return dic;
     }
 
     public int getWordCount(){

@@ -14,12 +14,13 @@ public class ChatRewind {
         gather_message_counts(chat);
         gather_word_counts(chat);
         gather_react_counts(chat);
-        print_raw_stat("message counts");
-        print_raw_stat("word counts");
-        print_raw_stat("reacts sent");
-        print_raw_stat("reacts received");
-        print_raw_stat("laugh reacts sent");
-        print_raw_stat("laugh reacts received");
+        chat.print_msgs();
+        //print_raw_stat("message counts");
+        //print_raw_stat("word counts");
+        //print_raw_stat("reacts sent");
+        //print_raw_stat("reacts received");
+        //print_raw_stat("laugh reacts sent");
+        //print_raw_stat("laugh reacts received");
         //print_react_counts(chat);
 
     }
