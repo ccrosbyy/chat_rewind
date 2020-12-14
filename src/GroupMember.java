@@ -5,6 +5,15 @@ public class GroupMember {
     String firstname, lastname, fullname;
     ArrayList<Message> messages = new ArrayList<Message>();
 
+    Message longestMessage;
+
+    /**
+     * this will store earned titles, such as "longest message";
+     * the actual stat will be stored in the stats dictionary in ChatRewind
+     * (each string in this will be a key to the value)
+     */
+    ArrayList<String> titles = new ArrayList<>();
+
     ArrayList<Reaction> reactsSent = new ArrayList<Reaction>();
     ArrayList<Reaction> reactsReceived = new ArrayList<Reaction>();
 
@@ -108,5 +117,20 @@ public class GroupMember {
 
     String getName(){
         return fullname;
+    }
+
+    public void assignTitle(String title){
+        titles.add(title);
+    }
+
+
+    public void findLongestMessage(){
+        int len = -1;
+        for (Message m : messages){
+            if (m.getContent() != null && m.getContent().length() > len) {
+                len = m.getContent().length();
+                longestMessage = m;
+            }
+        }
     }
 }

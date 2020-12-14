@@ -14,9 +14,11 @@ public class ChatRewind {
         gather_message_counts(chat);
         gather_word_counts(chat);
         gather_react_counts(chat);
-        chat.print_msgs();
-        //print_raw_stat("message counts");
-        //print_raw_stat("word counts");
+        gather_longest_messages(chat);
+        print_raw_stat("longest message");
+        //chat.print_msgs();
+        //print_raw_stat("message count");
+        //print_raw_stat("word count");
         //print_raw_stat("reacts sent");
         //print_raw_stat("reacts received");
         //print_raw_stat("laugh reacts sent");
@@ -25,19 +27,59 @@ public class ChatRewind {
 
     }
 
+    /**
+     * longest message by character count
+     * @param chat
+     */
+    public void gather_longest_messages(Chat chat){
+        stats.put("longest message", new HashMap<>());
+        for (GroupMember member : chat.getMembers()) {
+            member.findLongestMessage();
+            stats.get("longest message").put(member, member.longestMessage.getContent().length());
+        }
+        get_highest("longest message").assignTitle("longest message");
+    }
+
+    public GroupMember get_highest(String stat){
+        GroupMember topdog = null;
+        int highest = -1;
+        for (Map.Entry<GroupMember,Integer> item : stats.get(stat).entrySet()){
+            if (item.getValue() > highest){
+                highest = item.getValue();
+                topdog = item.getKey();
+            }
+        }
+        return topdog;
+    }
+
+    public GroupMember get_lowest(String stat){
+        GroupMember bottom = null;
+        int lowest = -1;
+        for (Map.Entry<GroupMember,Integer> item : stats.get(stat).entrySet()){
+            if (item.getValue() < lowest || lowest == -1){
+                lowest = item.getValue();
+                bottom = item.getKey();
+            }
+        }
+        return bottom;
+    }
 
     public void gather_message_counts(Chat chat){
-        stats.put("message counts", new HashMap<>());
+        stats.put("message count", new HashMap<>());
         for (GroupMember member : chat.getMembers()) {
-            stats.get("message counts").put(member, member.messages.size());
+            stats.get("message count").put(member, member.messages.size());
         }
+        get_highest("message count").assignTitle("most messages");
+        get_lowest("message count").assignTitle("least messages");
     }
 
     public void gather_word_counts(Chat chat){
-        stats.put("word counts", new HashMap<>());
+        stats.put("word count", new HashMap<>());
         for (GroupMember member : chat.getMembers()) {
-            stats.get("word counts").put(member, member.getWordCount());
+            stats.get("word count").put(member, member.getWordCount());
         }
+        get_highest("word count").assignTitle("most words");
+        get_lowest("word count").assignTitle("least words");
     }
 
     public void gather_react_counts(Chat chat){
