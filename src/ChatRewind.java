@@ -59,17 +59,20 @@ public class ChatRewind {
 
     public ChatRewind(){
         Chat chat = new Chat("messages/inbox/society_ekt-war5ua/message_1.json");
-        for (int i = 2; i < 15; i++)
-            chat.add_file("messages/inbox/society_ekt-war5ua/message_" + i + ".json");
+        //for (int i = 2; i < 15; i++)
+            //chat.add_file("messages/inbox/society_ekt-war5ua/message_" + i + ".json");
 
         // do stats thing yeah
         gather_message_counts(chat);
         gather_word_counts(chat);
         gather_react_counts(chat);
         gather_longest_messages(chat);
-        //print_raw_stat("longest message");
+        //gather_best_messages(chat);
+
+        print_raw_stat("message count");
         calculate_word_frequency(chat);
         horniness(chat);
+        normalize(chat, "laugh reacts sent", "laugh reacts received");
         //most_frequent_words(chat);
         //count_phrase(chat,"     ");
 
@@ -104,6 +107,39 @@ public class ChatRewind {
         //print_raw_stat("laugh reacts received");
         //print_react_counts(chat);
 
+    }
+
+    /**
+     * retrieve the value of a given stat for a given member
+     * @param stat
+     * @param m
+     * @return
+     */
+    public int get_stat(String stat, GroupMember m){
+        return stats.get(stat).get(m);
+    }
+
+    /**
+     * divides another stat by the value of a given stat (message count is default stat2)
+     * @param chat
+     * @param stat
+     */
+    public void normalize(Chat chat, String stat){
+        stats.put(stat + " / message count", new HashMap<>());
+        for (GroupMember member : chat.getMembers()){
+            float normo = 1.0f* get_stat(stat, member) / get_stat("message count", member);
+            stats.get(stat + " / message count").put(member, (int)(normo * 10000));
+        }
+        print_raw_stat(stat + " / message count");
+    }
+
+    public void normalize(Chat chat, String stat, String stat2){
+        stats.put(stat + " / " + stat2, new HashMap<>());
+        for (GroupMember member : chat.getMembers()){
+            float normo = 1.0f* get_stat(stat, member) / get_stat(stat2, member);
+            stats.get(stat + " / " + stat2).put(member, (int)(normo * 10000));
+        }
+        print_raw_stat(stat + " / " + stat2);
     }
 
     public void horniness(Chat chat){
