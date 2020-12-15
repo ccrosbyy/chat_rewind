@@ -42,9 +42,148 @@ public class GroupMember {
     int laughReactsReceived = 0;
     int sadReactsReceived = 0;
 
+    Message topReact, topLaugh, topWow, topAngry, topSad, topHeart, topUp, topDown;
+
     public GroupMember(String name) {
         fullname = name;
     }
+
+    public void findMostReacted(String reaction){
+        int topcount = -1;
+        Message top = null;
+        for (Message m : messages) {
+            int count = 0;
+            if (m.getReacts() != null){ //&& m.getContent() != null) { //eventually support photo messages BRO COME ON
+                switch (reaction) {
+                    case "any":
+                        for (Reaction r : m.getReacts()) {
+                            count++;
+                        }
+                        break;
+
+                    case "laugh":
+                        for (Reaction r : m.getReacts()) {
+                            if (r.getVibe().equals("laugh"))
+                                count++;
+                        }
+                        break;
+
+                    case "wow":
+                        for (Reaction r : m.getReacts()) {
+                            if (r.getVibe().equals("wow"))
+                                count++;
+                        }
+                        break;
+
+                    case "sad":
+                        for (Reaction r : m.getReacts()) {
+                            if (r.getVibe().equals("sad"))
+                                count++;
+                        }
+                        break;
+
+                    case "angry":
+                        for (Reaction r : m.getReacts()) {
+                            if (r.getVibe().equals("angry"))
+                                count++;
+                        }
+                        break;
+
+                    case "heart":
+                        for (Reaction r : m.getReacts()) {
+                            if (r.getVibe().equals("heart"))
+                                count++;
+                        }
+                        break;
+
+                    case "thumbs up":
+                        for (Reaction r : m.getReacts()) {
+                            if (r.getVibe().equals("thumbs up"))
+                                count++;
+                        }
+                        break;
+
+                    case "thumbs down":
+                        for (Reaction r : m.getReacts()) {
+                            if (r.getVibe().equals("thumbs down"))
+                                count++;
+                        }
+                        break;
+                }
+
+                if (count > topcount) {
+                    topcount = count;
+                    top = m;
+                }
+            }
+        }
+
+        switch (reaction) {
+            case "any":
+                topReact = top;
+                break;
+
+            case "laugh":
+                topLaugh = top;
+                break;
+
+            case "wow":
+                topWow = top;
+                break;
+
+            case "sad":
+                topSad = top;
+                break;
+
+            case "angry":
+                topAngry = top;
+                break;
+
+            case "heart":
+                topHeart = top;
+                break;
+
+            case "thumbs up":
+                topUp = top;
+                break;
+
+            case "thumbs down":
+                topDown = top;
+                break;
+        }
+    }
+
+    public Message getMostReacted(String reaction){
+        switch (reaction) {
+            case "any":
+                return topReact;
+
+            case "laugh":
+                return topLaugh;
+
+            case "wow":
+                return topWow;
+
+            case "sad":
+                return topSad;
+
+            case "angry":
+                return topAngry;
+
+            case "heart":
+                return topHeart;
+
+            case "thumbs up":
+                return topUp;
+
+            case "thumbs down":
+                return topDown;
+
+            default:
+                return topReact;
+        }
+    }
+
 
     public int getWordCount(){
         int count = 0;

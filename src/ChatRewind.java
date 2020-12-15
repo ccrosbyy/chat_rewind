@@ -67,12 +67,13 @@ public class ChatRewind {
         gather_word_counts(chat);
         gather_react_counts(chat);
         gather_longest_messages(chat);
-        //gather_best_messages(chat);
+        //find_best_messages(chat);
 
         print_raw_stat("message count");
         calculate_word_frequency(chat);
         horniness(chat);
-        normalize(chat, "laugh reacts sent", "laugh reacts received");
+        print_raw_stat("laugh reacts received");
+        difference(chat, "laugh reacts received", "laugh reacts sent");
         //most_frequent_words(chat);
         //count_phrase(chat,"     ");
 
@@ -109,6 +110,29 @@ public class ChatRewind {
 
     }
 
+    public void find_best_messages(Chat chat){
+        for (GroupMember member : chat.getMembers()) {
+            member.findMostReacted("any");
+            member.findMostReacted("laugh");
+            member.findMostReacted("wow");
+            member.findMostReacted("sad");
+            member.findMostReacted("angry");
+            member.findMostReacted("heart");
+            member.findMostReacted("thumbs up");
+            member.findMostReacted("thumbs down");
+
+            System.out.println(member.getName() + "'s most reacted message: \n\t"
+                    + member.getMostReacted("any").getContent());
+            if (member.getMostReacted("any").getReacts() != null) {
+                for (Reaction react : member.getMostReacted("any").getReacts()) {
+                    System.out.println("\t\t" + react.getActorName() + " reacted with a " + react.vibe);
+                }
+            }
+            System.out.println();
+        }
+
+    }
+
     /**
      * retrieve the value of a given stat for a given member
      * @param stat
@@ -137,9 +161,23 @@ public class ChatRewind {
         stats.put(stat + " / " + stat2, new HashMap<>());
         for (GroupMember member : chat.getMembers()){
             float normo = 1.0f* get_stat(stat, member) / get_stat(stat2, member);
-            stats.get(stat + " / " + stat2).put(member, (int)(normo * 10000));
+            stats.get(stat + " / " + stat2).put(member, (int)(normo * 100));
         }
         print_raw_stat(stat + " / " + stat2);
+    }
+
+    /**
+     * subtracts a stat value from an opposing stat value
+     * @param chat
+     * @param stat
+     * @param stat2
+     */
+    public void difference(Chat chat, String stat, String stat2){
+        stats.put("net " + stat, new HashMap<>());
+        for (GroupMember member : chat.getMembers()){
+            stats.get("net " + stat).put(member, get_stat(stat, member) - get_stat(stat2, member));
+        }
+        print_raw_stat("net " + stat);
     }
 
     public void horniness(Chat chat){
