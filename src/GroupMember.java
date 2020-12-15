@@ -2,6 +2,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GroupMember {
 
@@ -165,6 +167,32 @@ public class GroupMember {
                 len = m.getContent().length();
                 longestMessage = m;
             }
+        }
+    }
+
+    public int countWord(String word){
+        if (word_freq.get(word) != null)
+            return word_freq.get(word);
+        else
+            return 0;
+    }
+
+    public int countPhrase(String phrase){
+        if (phrase.replace(" ", "cum").equals(phrase)) {
+            //System.out.println("single word phrase, redirecting to count_word for maximum efficiency");
+            return countWord(phrase);
+        }
+        else {
+            int count = 0;
+            for (Message msg : messages) {
+                if (msg.getContent() != null) {
+                    Pattern p = Pattern.compile(phrase);
+                    Matcher m = p.matcher(msg.getContent().toLowerCase());
+                    while (m.find())
+                        count++;
+                }
+            }
+            return count;
         }
     }
 }

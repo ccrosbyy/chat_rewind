@@ -15,7 +15,7 @@ public class ChatRewind {
             ,"this", "i'll", "of", "so", "i'm", "me", "on", "was", "as", "with", "if", "what", "we", "at", "your"
             ,"you're", "are", "up", "get", "don't", "all", "one", "or", "how", "out", "go", "he", "she"
             , "her", "about", "then", "know", "they", "too", "got", "gonna", "like", "now", "from", "also", "want"
-            , "really", "why", "did", "didn't", "think", "yea", "yeah", "no", "still", "good", "yes", "haha"
+            , "really", "why", "did", "didn't", "think", "yea", "yeah", "no", "still", "good", "yes", "haha", "hahaha"
             , "them", "oh", "would", "come", "more", "cause", "here", "were", "him", "had", "will", "even", "tho"
             , "has", "say", "his", "because", "wanna", ":", "they're", "after", "am", "need", "much", "going"
             , "let", "dont", "thats", "see", "sounds", "than", "over", "been", "some", "into", "way", "doing"
@@ -23,12 +23,44 @@ public class ChatRewind {
             ,  "might", "sent", "should", "feel", "right", "back", "well", "someone", "something"
             , "youre", "ive", "probs", "very", "make", "next", "us", "what's", "coming", "take", "wait", "w"
             , "i've", "our", "we're", "day", "those", "better", "two", "one", "she's", "few", "by", "rn", "tell"
-            , "before", "doesn't", "does", "where", "things", "who", "asked"};
+            , "before", "doesn't", "does", "where", "things", "who", "asked", "time", "again", "never", "i'd", "isn't"
+            , "im", "first", "pretty", "being", "there's", "thought", "didnt", "thing", "other", "already", "any"
+            , "last"};
+
+    String[] profanities = {"fuck", "fucking", "fuckin", "fucker", "shit", "shitty", "shitter", "motherfucker",
+        "bastard", "shithead", "shit", "ass", "asshole", "ass", "fuckwad", "bitch", "cunt", "piss", "prick",
+            "shitting", "goddamn", "damn", "hell", "dumbass", "fatass", "bitchass", "bitchy", "bitching", "bitchin",
+                "bitcher", "bitches", "fucks", "f u c k", "s h i t"};
+
+    String[] derogatory_words = {"nigger", "nigga", "gook", "chink", "spic", "kike", "faggot", "homo", "retard"};
+
+    String[] horny_words = {"horny", "gay", "sex", "penis", "dick", "cock", "anal", "missionary", "doggystyle",
+        "doggy style", "pussy", "clit", "clitoris", "cum", "jizz", "ejaculate", "blowjob", "blow job", "suck dick",
+            "suck his dick", "suck your dick", "jack off", "masturbate", "rub one out", "rubbing one out", "cumming",
+                "coom", "cooming", "jizzing", "ejaculating", "blow him", "blowing him", "suck off", "suck him off",
+                    "squeeze", "jerk off", "jerking off", "jerk it", "jerking it", "swallow", "spitters are quitters",
+                        "handjob", "hand job", "dildo", "vibrator", "lube", "lubed", "nipple", "nipples", "penises",
+                            "penis", "dicks", "cocks", "boner", "erection", "erect", "boned", "boning", "rockhard",
+        "rock hard", "dicked", "dick down", "poundtown", "pound town", "vagina", "slut", "kinky", "kink", "intercourse",
+        "sexual", "sexy", "stroke it", "stroke it off", "docking", "nutting", "nice ass", "make me",
+        "nice body", "aroused", "eat pussy", "go down on", "analingus", "eat ass", "eating ass", "ate ass", "eat out",
+        "eating lunch", "eats lunch", "humping", "grinding", "rimjob", "rim job", "wanna fuck", "to fuck", "would fuck",
+        "would smash", "wanna smash", "i'd smash", "kiss", "kissing", "making out", "make out", "makeout", "he's hot",
+        "that's hot", "thats hot", "hes hot", "id smash", "spread it", "tits", "boobs", "titties", "boobies", "thicc",
+        "thiccc", "thic", "meaty", "meat", "moist", "daddy", "puss", "slutty", "sext", "sexting", "nude", "asspounder",
+        "nudes", "naked", "stripping", "stripper", "porn", "gayporn", "pornography", "pornographic", "pornhub", "porno",
+        "bend over", "bend me over", "pound me", "pound my ass", "pounder", "bulge", "bulging", "pulsing", "throbbing",
+        "sexually", "tie me up", "whip me", "grope", "fondle", "feel up", "fingered", "fingering", "slapping", "smack",
+        "dicking", "stroking", "deepthroat", "deep throat", "deep throating", "gagging on", "take it off", "juicy",
+        "come find out", "i'm gonna pre", "im gonna pre", "blow my load", "blow your load", "blow a load", "top him",
+        "bottom me", "bottoming", "powerbottom", "power bottom", "bear", "bears", "twinks", "twink", "hunk", "hunks"};
+
 
 
     public ChatRewind(){
         Chat chat = new Chat("messages/inbox/society_ekt-war5ua/message_1.json");
-        chat.add_file("messages/inbox/society_ekt-war5ua/message_2.json");
+        for (int i = 2; i < 15; i++)
+            chat.add_file("messages/inbox/society_ekt-war5ua/message_" + i + ".json");
 
         // do stats thing yeah
         gather_message_counts(chat);
@@ -37,11 +69,16 @@ public class ChatRewind {
         gather_longest_messages(chat);
         //print_raw_stat("longest message");
         calculate_word_frequency(chat);
-        most_frequent_words(chat);
-        //gather_frequent_words(chat);
+        horniness(chat);
+        //most_frequent_words(chat);
+        //count_phrase(chat,"     ");
+
+        //print_raw_stat("said who asked");
+
+
 
          //GET/PRINT TOP TEN WORDS FOR EACH PERSON
-        for (int j = 0; j < 8; j++) {
+        /*for (int j = 0; j < 8; j++) {
             chat.getMembers().get(j).findTopTenWords(words_to_ignore);
             System.out.println(chat.members.get(j).getName() +":");
             for (int i = 0; i < 20; i++) {
@@ -52,7 +89,7 @@ public class ChatRewind {
                 System.out.print(chat.getMembers().get(j).word_freq.get(chat.getMembers().get(j).topWords[i]) + "   ");
             }
             System.out.println("\n");
-        }
+        }*/
 
         /*for (GroupMember member : chat.members){
             System.out.println("\n" + member.getName() + "'s longest message: \n"
@@ -67,6 +104,50 @@ public class ChatRewind {
         //print_raw_stat("laugh reacts received");
         //print_react_counts(chat);
 
+    }
+
+    public void horniness(Chat chat){
+        stats.put("horniness", new HashMap<>());
+        for (GroupMember member : chat.getMembers()) {
+            stats.get("horniness").put(member, 0); //initialize stat
+            for (String phrase : horny_words)
+                stats.get("horniness").put(member, stats.get("horniness").get(member) + member.countPhrase(phrase));
+        }
+        GroupMember topdog = get_highest("horniness");
+        GroupMember bottom = get_lowest("horniness");
+        topdog.assignTitle("most horny");
+        bottom.assignTitle("least horny");
+        //System.out.println(topdog.getName() + " was the most horny!\n");
+        print_raw_stat("horniness");
+
+    }
+
+    public void count_phrase(Chat chat, String phrase){
+        if (phrase.replace(" ", "cum").equals(phrase)){
+            //System.out.println("single word phrase, redirecting to count_word for maximum efficiency");
+            count_word(chat, phrase);
+        } else {
+            stats.put("said " + phrase, new HashMap<>());
+            for (GroupMember member : chat.getMembers()) {
+                stats.get("said " + phrase).put(member, member.countPhrase(phrase));
+            }
+            GroupMember topdog = get_highest("said " + phrase);
+            topdog.assignTitle("said " + phrase);
+            System.out.println(topdog.getName() + " said " + phrase + " "
+                    + stats.get("said " + phrase).get(topdog) + " times!");
+        }
+
+    }
+
+    public void count_word(Chat chat, String word){
+        stats.put("said " + word, new HashMap<>());
+        for (GroupMember member : chat.getMembers()) {
+            stats.get("said " + word).put(member, member.countWord(word));
+        }
+        GroupMember topdog = get_highest("said " + word);
+        topdog.assignTitle("said " + word);
+        System.out.println(topdog.getName() + " said " + word + " "
+                + stats.get("said " + word).get(topdog) + " times!");
     }
 
     public void most_frequent_words(Chat chat){
