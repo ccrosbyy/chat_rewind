@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -10,11 +7,15 @@ public class GroupMember {
     String firstname, lastname, fullname;
     ArrayList<Message> messages = new ArrayList<Message>();
 
+    ArrayList<String> nicknames = new ArrayList<>();
+
     HashMap<String, Integer> word_freq = new HashMap<>();
 
     String[] topWords = new String[20];
 
     Message longestMessage;
+
+    int leaveCount = 0;
 
     /**
      * this will store earned titles, such as "longest message";
@@ -45,7 +46,23 @@ public class GroupMember {
     Message topReact, topLaugh, topWow, topAngry, topSad, topHeart, topUp, topDown;
 
     public GroupMember(String name) {
-        fullname = name;
+        setName(name);
+    }
+
+    public void addNickname(String nickname){
+        nicknames.add(nickname);
+    }
+
+    public void countLeave(){
+        leaveCount++;
+    }
+
+    public ArrayList<String> getTitles(){
+        return titles;
+    }
+
+    public ArrayList<String> getNicknames(){
+        return nicknames;
     }
 
     public void findMostReacted(String reaction){
@@ -263,8 +280,18 @@ public class GroupMember {
         }
     }
 
-    String getName(){
+    public String getName(){
         return fullname;
+    }
+
+    public String getFirstname(){
+        return firstname;
+    }
+
+    public void setName(String s){
+        fullname = s;
+        firstname = s.split(" ")[0];
+        lastname = s.split(" ")[1];
     }
 
     public void assignTitle(String title){

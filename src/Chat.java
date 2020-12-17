@@ -67,6 +67,27 @@ public class Chat {
                         message.getSender().reactsReceived.add(react);
                     }
                 }
+
+                // if message is a nickname change, add nickname to member
+                if (message.getContent() != null && message.getContent().contains(" set the nickname for ")){
+                    for (GroupMember member : members){
+                        if (message.getContent().contains(" set the nickname for "+member.getName())){
+                            int i = message.getContent().indexOf(
+                                    "for " +member.getName() + " to ") + 8 + member.getName().length();
+                            member.addNickname(message.getContent().substring(i, message.getContent().length()-1));
+                            //System.out.println(member.nicknames);
+                        }
+                    }
+                }
+
+                // if message is a left chat alert, count it to the person
+                if (message.getType().equals("Unsubscribe")){
+                    message.getSender().countLeave();
+                    //System.out.println(message.getSenderName() +
+                            //" left the chat (" + message.getSender().leaveCount + " times total)");
+                }
+
+
                 messages.add(message);
             }
 
