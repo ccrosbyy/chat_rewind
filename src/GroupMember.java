@@ -44,6 +44,7 @@ public class GroupMember {
     int sadReactsReceived = 0;
 
     Message topReact, topLaugh, topWow, topAngry, topSad, topHeart, topUp, topDown;
+    int topReactNum, topLaughNum, topWowNum, topAngryNum, topSadNum, topHeartNum, topUpNum, topDownNum;
 
     public GroupMember(String name) {
         setName(name);
@@ -64,6 +65,7 @@ public class GroupMember {
     public ArrayList<String> getNicknames(){
         return nicknames;
     }
+
 
     public void findMostReacted(String reaction){
         int topcount = -1;
@@ -138,34 +140,42 @@ public class GroupMember {
         switch (reaction) {
             case "any":
                 topReact = top;
+                topReactNum = topcount;
                 break;
 
             case "laugh":
                 topLaugh = top;
+                topLaughNum = topcount;
                 break;
 
             case "wow":
                 topWow = top;
+                topWowNum = topcount;
                 break;
 
             case "sad":
                 topSad = top;
+                topSadNum = topcount;
                 break;
 
             case "angry":
                 topAngry = top;
+                topAngryNum = topcount;
                 break;
 
             case "heart":
                 topHeart = top;
+                topHeartNum = topcount;
                 break;
 
             case "thumbs up":
                 topUp = top;
+                topUpNum = topcount;
                 break;
 
             case "thumbs down":
                 topDown = top;
+                topDownNum = topcount;
                 break;
         }
     }

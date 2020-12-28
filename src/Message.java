@@ -1,14 +1,22 @@
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.text.DateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
 public class Message {
 
-    String content, type, senderName;
+    String content, type, senderName, photo, timestamp_date, timestamp_time;
     long timestamp_ms;
+    Instant timestamp_raw;
     ArrayList<Reaction> reactions;
     GroupMember sender;
 
@@ -18,7 +26,14 @@ public class Message {
             content = message_decoder(content);
         }
         type = (String)obj.get("type");
+
         timestamp_ms = (long)obj.get("timestamp_ms");
+        timestamp_raw = Instant.ofEpochMilli(timestamp_ms);
+        timestamp_date = LocalDateTime.ofInstant(timestamp_raw, ZoneOffset.UTC).format(
+                DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT));
+        timestamp_time = LocalDateTime.ofInstant(timestamp_raw, ZoneOffset.UTC).format(
+                DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM));
+
         senderName = (String)obj.get("sender_name");
        /* for (GroupMember m : super.members){
             if (m.fullname.equals(obj.get("sender_name"))) {
@@ -37,7 +52,17 @@ public class Message {
                 reactions.add(new Reaction(react));
             }
         }
+
+        if (obj.containsKey("photos")){
+            JSONObject pic = (JSONObject) ((JSONArray)obj.get("photos")).get(0);
+            photo = (String) pic.get("uri");
+        }
     }
+
+    public String getPhoto(){
+        return photo;
+    }
+
 
     /**
      * I need to figure out how to actually fix the encoding on this shit
@@ -84,7 +109,11 @@ public class Message {
         return type;
     }
 
-    long getTimestamp(){
+    String getTimestampFull(){
+        return timestamp_date + " " + timestamp_time;
+    }
+
+    long getTimestamp_ms(){
         return timestamp_ms;
     }
 

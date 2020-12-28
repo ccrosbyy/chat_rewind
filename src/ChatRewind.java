@@ -34,7 +34,16 @@ public class ChatRewind {
 
     String[] derogatory_words = {"nigger", "nigga", "gook", "chink", "spic", "kike", "faggot", "homo", "retard"};
 
-    String[] horny_words = {"horny", "sex", "penis", "dick", "cock", "anal", "missionary", "doggystyle",
+    String[] attacks = {"fuck you", "hate you", "fuck off", "eat shit", "you suck", "you bitch", "stupid bitch",
+            "get fucked", "you pussy", "you're a pussy", "kill yourself", "kys", "suck a dick", "suck my dick", "smd",
+            "i will kill you", "i'll kill you", "who asked", "i don't care", "you're a bitch", "you dumbass",
+            "i dont care", "dont care", "don't care", "nobody cares", "fuck yourself", "you're stupid", "your stupid",
+            "your dumb", "you're dumb", "bitch boy", "kill your self", "kill you're self", "fuck your self",
+            "you stupid", "you dumb", "eat a dick", "you're ugly", "you're so ugly", "your ugly", "your so ugly",
+            "you are annoying", "you are so annoying", "you're annoying", "you're so annoying", "your annoying",
+            "your so annoying", "you are ugly", "you are so ugly"};
+
+    String[] horny_words = {"horny", "sex", "penis", "dick sucking", "cock", "anal", "missionary", "doggystyle",
         "doggy style", "pussy", "clit", "clitoris", "cum", "jizz", "ejaculate", "blowjob", "blow job", "suck dick",
             "suck his dick", "suck your dick", "jack off", "masturbate", "rub one out", "rubbing one out", "cumming",
                 "coom", "cooming", "jizzing", "ejaculating", "blow him", "blowing him", "suck off", "suck him off",
@@ -55,7 +64,8 @@ public class ChatRewind {
         "come find out", "i'm gonna pre", "im gonna pre", "blow my load", "blow your load", "blow a load", "top him",
         "bottom me", "bottoming", "powerbottom", "power bottom", "bear", "bears", "twinks", "twink", "hunk", "hunks",
         "moaned", "moaning", "moan", "arouse", "arousing", "so hot", "hot af", "hot as fuck", "long and hard", "thrust",
-        "thrusting", "i'm hard", "im hard", "so hard"};
+        "thrusting", "i'm hard", "im hard", "so hard", "that ass", "wet dream", "wet dreams", "douched", "douching",
+        "to douche"};
 
 
 
@@ -69,22 +79,31 @@ public class ChatRewind {
         gather_word_counts(chat);
         gather_react_counts(chat);
         gather_longest_messages(chat);
-        //find_best_messages(chat);
+        find_best_messages(chat);
 
         //pick stats of interest
 
 
         //print_raw_stat("message count");
         calculate_word_frequency(chat);
+        most_frequent_words(chat);
         horniness(chat);
-        normalize(chat, "horniness");
+        meanness(chat);
+        profaneness(chat);
+
+        //FOR NOMINATIONS BEST MESSAGE (UTILITY; DO NOT USE IN FINAL PROGRAM)
+        //nominate_messages(chat);
 
 
         //print stats compilation
-        for (GroupMember member : chat.getMembers()){
-            System.out.println(generate_member_profile(chat, member) + "\n\n\n");
-        }
+       // for (GroupMember member : chat.getMembers()){
+            //System.out.println(generate_member_profile(chat, member) + "\n\n\n");
+       // }
 
+
+        //print_raw_stat("message count");
+        //print_raw_stat("meanness");
+        //print_raw_stat("meanness / message count");
 
         //print_raw_stat("laugh reacts received");
         //difference(chat, "laugh reacts received", "laugh reacts sent");
@@ -113,7 +132,7 @@ public class ChatRewind {
             System.out.println("\n" + member.getName() + "'s longest message: \n"
                     + member.longestMessage.getContent() + "\n");
         }*/
-        //chat.print_msgs();
+        chat.print_msgs();
         //print_raw_stat("message count");
         //print_raw_stat("word count");
         //print_raw_stat("reacts sent");
@@ -124,12 +143,13 @@ public class ChatRewind {
 
     }
 
+
     public String generate_member_profile(Chat chat, GroupMember member){
         String s = "";
-        s += member.getName().toUpperCase() + "\n----------------------------------------\n";
+        s += member.getName().toUpperCase() + "\n" + member.getTitles() +
+                "\n----------------------------------------\n\n";
 
-        s += member.getTitles() + "\n";
-
+        // NICKNAMES
         if (member.getNicknames().size() > 1) {
             s += member.getFirstname() + " went by " + member.getNicknames().size() + " different nicknames this year.\n";
             //TODO calculate longest standing nickname when dates are workable
@@ -138,6 +158,7 @@ public class ChatRewind {
             s += member.getFirstname() + " went by the nickname " + member.getNicknames().get(0) + " this year.\n\n";
         }
 
+        // MESSAGE COUNT
         s += member.getFirstname() + " sent " + member.getMessages().size() + " messages. \n";
         if (member.getTitles().contains("most messages")){
             s += "This was the most messages sent by anybody in the chat! Why not find something better to do?\n";
@@ -145,9 +166,20 @@ public class ChatRewind {
         s+= "\n";
         //TODO after making dates workable, add a stat here about the average amount of messages sent per day or some shit
 
+        // WORD FREQUENCY
+        s += "Some of " + member.getFirstname() + "'s favourite words this year were: \n\t";
+        for (int i = 0; i < 10; i++){
+            if ((i+1) % 5 != 0)
+                s += member.topWords[i] + ", ";
+            else
+                s += member.topWords[i] + "\n\t";
+        }
+        s+= "\n";
+
+        // HORNINESS
         if (member.getTitles().contains("most horny") && member.getTitles().contains("most horny normalized")){
             s += "In terms of horniness, " + member.getFirstname() + " is the undisputed champion, sending up to " +
-                    stats.get("horniness").get(member) + " horny messages, at rate higher than anybody else.\n" +
+                    stats.get("horniness").get(member) + " horny messages, at a rate higher than anybody else.\n" +
                     "Time to take a nice cold shower you dog!\n\n\n";
         } else if(member.getTitles().contains("most horny")){
             s += "In terms of horniness, " + member.getFirstname() + " let loose the most, with " +
@@ -167,8 +199,60 @@ public class ChatRewind {
 
     }
 
-    public void find_best_messages(Chat chat){
+
+    public void meanness(Chat chat){
+        stats.put("meanness", new HashMap<>());
         for (GroupMember member : chat.getMembers()) {
+            stats.get("meanness").put(member, 0); //initialize stat
+            for (String phrase : attacks)
+                stats.get("meanness").put(member, stats.get("meanness").get(member) + member.countPhrase(phrase));
+        }
+        GroupMember rawtopdog = get_highest("meanness");
+        GroupMember rawbottom = get_lowest("meanness");
+        normalize(chat, "meanness");
+        GroupMember topdog = get_highest("meanness / message count");
+        GroupMember bottom = get_lowest("meanness / message count");
+        rawtopdog.assignTitle("meanest");
+        rawbottom.assignTitle("least mean");
+        topdog.assignTitle("meanest normalized");
+        bottom.assignTitle("least mean normalized");
+        //System.out.println(topdog.getName() + " was the most horny!\n");
+        //print_raw_stat("horniness");
+    }
+
+    public void profaneness(Chat chat){
+        stats.put("profaneness", new HashMap<>());
+        for (GroupMember member : chat.getMembers()) {
+            stats.get("profaneness").put(member, 0); //initialize stat
+            for (String phrase : profanities)
+                stats.get("profaneness").put(member, stats.get("profaneness").get(member) + member.countPhrase(phrase));
+        }
+        GroupMember rawtopdog = get_highest("profaneness");
+        GroupMember rawbottom = get_lowest("profaneness");
+        normalize(chat, "profaneness");
+        GroupMember topdog = get_highest("profaneness / message count");
+        GroupMember bottom = get_lowest("profaneness / message count");
+        rawtopdog.assignTitle("most vulgar");
+        rawbottom.assignTitle("least vulgar");
+        topdog.assignTitle("most vulgar normalized");
+        bottom.assignTitle("least vulgar normalized");
+        //System.out.println(topdog.getName() + " was the most horny!\n");
+        //print_raw_stat("horniness");
+
+    }
+
+    public void find_best_messages(Chat chat){
+        stats.put("most reacts", new HashMap<>());
+        stats.put("most laugh reacts", new HashMap<>());
+        stats.put("most wow reacts", new HashMap<>());
+        stats.put("most angry reacts", new HashMap<>());
+        stats.put("most sad reacts", new HashMap<>());
+        stats.put("most heart reacts", new HashMap<>());
+        stats.put("most thumbs up", new HashMap<>());
+        stats.put("most thumbs down", new HashMap<>());
+
+        for (GroupMember member : chat.getMembers()) {
+            //calculate stats
             member.findMostReacted("any");
             member.findMostReacted("laugh");
             member.findMostReacted("wow");
@@ -178,6 +262,15 @@ public class ChatRewind {
             member.findMostReacted("thumbs up");
             member.findMostReacted("thumbs down");
 
+            //gather stats
+            stats.get("most reacts").put(member, member.topReactNum);
+            stats.get("most laugh reacts").put(member, member.topLaughNum);
+            stats.get("most wow reacts").put(member, member.topWowNum);
+            stats.get("most sad reacts").put(member, member.topSadNum);
+            stats.get("most angry reacts").put(member, member.topAngryNum);
+            stats.get("most heart reacts").put(member, member.topHeartNum);
+            stats.get("most thumbs up").put(member, member.topUpNum);
+            stats.get("most thumbs down").put(member, member.topDownNum);
             /*System.out.println(member.getName() + "'s most reacted message: \n\t"
                     + member.getMostReacted("any").getContent());
             if (member.getMostReacted("any").getReacts() != null) {
@@ -186,9 +279,18 @@ public class ChatRewind {
                 }
             }
             System.out.println();*/
-
-
         }
+
+        //award titles
+        get_highest("most reacts").assignTitle("most reacted message");
+        get_highest("most laugh reacts").assignTitle("most laugh reacted message");
+        get_highest("most wow reacts").assignTitle("most wow reacted message");
+        get_highest("most sad reacts").assignTitle("most sad reacted message");
+        get_highest("most angry reacts").assignTitle("most angry reacted message");
+        get_highest("most heart reacts").assignTitle("most heart reacted message");
+        get_highest("most thumbs up").assignTitle("most upvoted message");
+        get_highest("most thumbs down").assignTitle("most downvoted message");
+
 
     }
 
@@ -310,10 +412,14 @@ public class ChatRewind {
                 }
             }
         }
-        for (int i = 0; i < 20; i++) {
+        /*for (int i = 0; i < 20; i++) {
             System.out.print(topWords[i] + "   ");
         }
-        System.out.println("\n");
+        System.out.println("\n");*/
+
+        for (GroupMember member : chat.getMembers()){
+            member.findTopTenWords(words_to_ignore);
+        }
     }
 
     public void gather_frequent_words(Chat chat){
@@ -460,6 +566,23 @@ public class ChatRewind {
             stats.get("thumbs down reacts sent").put(member, member.thumbsDownReactsSent);
             stats.get("thumbs down reacts received").put(member, member.thumbsDownReactsReceived);
         }
+
+        get_highest("reacts sent").assignTitle("most reacts sent");
+        get_highest("reacts received").assignTitle("most reacts received");
+        get_highest("laugh reacts sent").assignTitle("most laugh reacts sent");
+        get_highest("laugh reacts received").assignTitle("most laugh reacts received");
+        get_highest("wow reacts sent").assignTitle("most wow reacts sent");
+        get_highest("wow reacts received").assignTitle("most wow reacts received");
+        get_highest("heart reacts sent").assignTitle("most heart reacts sent");
+        get_highest("heart reacts received").assignTitle("most heart reacts received");
+        get_highest("sad reacts sent").assignTitle("most sad reacts sent");
+        get_highest("sad reacts received").assignTitle("most sad reacts received");
+        get_highest("angry reacts sent").assignTitle("most angry reacts sent");
+        get_highest("angry reacts received").assignTitle("most angry reacts received");
+        get_highest("thumbs up reacts sent").assignTitle("most thumbs up reacts sent");
+        get_highest("thumbs up reacts received").assignTitle("most thumbs up reacts received");
+        get_highest("thumbs down reacts sent").assignTitle("most thumbs down reacts sent");
+        get_highest("thumbs down reacts received").assignTitle("most thumbs down reacts received");
     }
 
     public void print_raw_stat(String stat){
@@ -532,6 +655,22 @@ public class ChatRewind {
 
 
 
+    }
+
+    public void nominate_messages(Chat chat){
+        for (Message m : chat.top_messages){
+            System.out.print(m.getSenderName()+ ": ");
+            if (m.getContent() != null)
+                System.out.println(m.getContent());
+            else
+                System.out.println(m.getPhoto());
+            if (m.getReacts() != null) {
+                for (Reaction react : m.getReacts()) {
+                    System.out.println("\t" + react.getActorName() + " reacted with a " + react.vibe);
+                }
+            }
+            System.out.println("\n");
+        }
     }
 
     public static void main(String[] args){
