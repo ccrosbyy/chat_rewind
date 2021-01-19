@@ -4,10 +4,11 @@ import java.util.regex.Pattern;
 
 public class GroupMember {
 
-    String firstname, lastname, fullname;
+    String firstname, lastname, fullname, lasting_nickname, descriptor;
     ArrayList<Message> messages = new ArrayList<Message>();
 
     ArrayList<String> nicknames = new ArrayList<>();
+    ArrayList<Message> nickname_messages = new ArrayList<>();
 
     HashMap<String, Integer> word_freq = new HashMap<>();
 
@@ -66,6 +67,29 @@ public class GroupMember {
         return nicknames;
     }
 
+    public void findLastingNickname(){
+        long time = -1;
+        Message lasting_name = null;
+        int lasting = 0;
+        //System.out.println(getNicknames());
+        if (nickname_messages.size() > 1) {
+            for (int i = 0; i < nickname_messages.size()-1; i++) {
+                if (nickname_messages.get(i).getTimestamp_ms() - nickname_messages.get(i + 1).getTimestamp_ms() > time) {
+                    //System.out.print("PISS " + fullname + " " +
+                            //(nickname_messages.get(i).getTimestamp_ms() - nickname_messages.get(i + 1).getTimestamp_ms()) + " ");
+                    //lasting_name = nickname_messages.get(i);
+                    lasting = i;
+                    time = nickname_messages.get(i).getTimestamp_ms() - nickname_messages.get(i + 1).getTimestamp_ms();
+
+                    //System.out.println(nickname_messages.get(i + 1).timestamp_date +
+                            //" - " + nickname_messages.get(i).timestamp_date);
+                }
+            }
+        }
+        if (!nicknames.isEmpty()){
+            lasting_nickname = nicknames.get(lasting);
+        }
+    }
 
     public void findMostReacted(String reaction){
         int topcount = -1;
@@ -133,6 +157,7 @@ public class GroupMember {
                 if (count > topcount) {
                     topcount = count;
                     top = m;
+                    //System.out.println(getName() + " " + reaction + " " + topcount + "\n" + top.getContent() + "\n\n");
                 }
             }
         }
@@ -212,6 +237,150 @@ public class GroupMember {
     }
 
 
+    public void findDescriptors(){
+        String sender_desc = "";
+        int[] senders = {angryReactsSent*4, laughReactsSent, wowReactsSent, sadReactsSent, heartReactsSent/4,
+                thumbsUpReactsSent/2, thumbsDownReactsSent/2};
+        int topSent = -1;
+        int topVal = -1;
+        int secondSent = -1;
+        int secondVal = -1;
+        //System.out.println(fullname);
+        //for (int i : senders)
+            //System.out.print(i + "  ");
+        for (int i = 0; i < senders.length; i++){
+            if (senders[i] > topVal){
+                topSent = i;
+                topVal = senders[i];
+            }
+        }
+        for (int i = 0; i < senders.length; i++) {
+            if (senders[i] > secondVal && i != topSent) {
+                secondSent = i;
+                secondVal = senders[i];
+            }
+        }
+        //System.out.println("\n"+topSent);
+       // System.out.println((secondSent +"\n"));
+
+        switch (secondSent){
+            case 0:
+                sender_desc += "Irate ";
+                break;
+            case 1:
+                sender_desc += "Amused ";
+                break;
+            case 2:
+                sender_desc += "Astonished ";
+                break;
+            case 3:
+                sender_desc += "Depressed ";
+                break;
+            case 4:
+                sender_desc += "Sweet ";
+                break;
+            case 5:
+                sender_desc += "Agreeing ";
+                break;
+            case 6:
+                sender_desc += "Disagreeing ";
+                break;
+        }
+
+        switch (topSent){
+            case 0:
+                sender_desc += "Misanthrope";
+                break;
+            case 1:
+                sender_desc += "Chucklehead";
+                break;
+            case 2:
+                sender_desc += "Pogger";
+                break;
+            case 3:
+                sender_desc += "Pessimist";
+                break;
+            case 4:
+                sender_desc += "Lover";
+                break;
+            case 5:
+                sender_desc += "Advocate";
+                break;
+            case 6:
+                sender_desc += "Contrarian";
+                break;
+        }
+
+        String receiver_desc = "";
+        int[] receivers = {angryReactsReceived*4, laughReactsReceived, wowReactsReceived, sadReactsReceived,
+                heartReactsReceived/4, thumbsUpReactsReceived/2, thumbsDownReactsReceived/2}; //divide or else everyone is lover
+        int topRec = -1;
+        topVal = -1;
+        int secondRec = -1;
+        secondVal = -1;
+        for (int i = 0; i < receivers.length; i++){
+            if (receivers[i] > topVal){
+                topRec = i;
+                topVal = receivers[i];
+            }
+        }
+        for (int i = 0; i < receivers.length; i++) {
+            if (receivers[i] > secondVal && i != topRec) {
+                secondRec = i;
+                secondVal = receivers[i];
+            }
+        }
+
+        switch (secondRec){
+            case 0:
+                receiver_desc += "Infuriating ";
+                break;
+            case 1:
+                receiver_desc += "Funny ";
+                break;
+            case 2:
+                receiver_desc += "Surprising ";
+                break;
+            case 3:
+                receiver_desc += "Pitiful ";
+                break;
+            case 4:
+                receiver_desc += "Beloved ";
+                break;
+            case 5:
+                receiver_desc += "Agreeable ";
+                break;
+            case 6:
+                receiver_desc += "Controversial ";
+                break;
+        }
+
+        switch (topRec){
+            case 0:
+                receiver_desc += "Madman";
+                break;
+            case 1:
+                receiver_desc += "Comedian";
+                break;
+            case 2:
+                receiver_desc += "Shocker";
+                break;
+            case 3:
+                receiver_desc += "Loser";
+                break;
+            case 4:
+                receiver_desc += "Darling";
+                break;
+            case 5:
+                receiver_desc += "Champion";
+                break;
+            case 6:
+                receiver_desc += "Opposition";
+                break;
+        }
+        descriptor = sender_desc + "; " + receiver_desc;
+    }
+
     public int getWordCount(){
         int count = 0;
         for (Message m : messages){
@@ -288,6 +457,7 @@ public class GroupMember {
                     heartReactsReceived++;
             }
         }
+        findDescriptors();
     }
 
     public String getName(){

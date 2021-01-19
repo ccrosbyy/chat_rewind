@@ -1,20 +1,18 @@
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.text.DateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
 public class Message {
 
-    String content, type, senderName, photo, timestamp_date, timestamp_time;
+    String content, type, senderName, photo, gif, video, timestamp_date, timestamp_time;
     long timestamp_ms;
     Instant timestamp_raw;
     ArrayList<Reaction> reactions;
@@ -57,11 +55,31 @@ public class Message {
             JSONObject pic = (JSONObject) ((JSONArray)obj.get("photos")).get(0);
             photo = (String) pic.get("uri");
         }
+
+        if (obj.containsKey("gifs")){
+            JSONObject gifs = (JSONObject) ((JSONArray)obj.get("gifs")).get(0);
+            gif = (String) gifs.get("uri");
+        }
+
+        if (obj.containsKey("videos")){
+            JSONObject vid = (JSONObject) ((JSONArray)obj.get("videos")).get(0);
+            video = (String) vid.get("uri");
+        }
     }
 
     public String getPhoto(){
         return photo;
     }
+
+    public String getGif(){
+        return gif;
+    }
+
+    public String getVideo(){
+        return video;
+    }
+
+
 
 
     /**

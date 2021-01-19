@@ -67,24 +67,36 @@ public class Chat {
                         }
                         message.getSender().reactsReceived.add(react);
                     }
-                    if (message.getReacts().size() > 4){
+                    if (message.getReacts().size() > 3){
                         top_messages.add(message);
                     }
                 }
 
                 // if message is a nickname change, add nickname to member
-                if (message.getContent() != null && (message.getContent().contains(" set the nickname for ") ||
-                        message.getContent().contains(" set your nickname to "))){
+                if (message.getContent() != null && ((message.getContent().contains(" set the nickname for ") ||
+                        message.getContent().contains(" set your nickname to ")) ||
+                        (message.getContent().contains(" set his own nickname to ")) ||
+                                message.getContent().contains(" set her own nickname to "))){
                     for (GroupMember member : members){
-                        if (message.getContent().contains(" set the nickname for "+member.getName())){
+                        if (message.getContent().contains(" set the nickname for "+member.getName())) {
                             int i = message.getContent().indexOf(
-                                    "for " +member.getName() + " to ") + 8 + member.getName().length();
+                                    "for " + member.getName() + " to ") + 8 + member.getName().length();
+                            member.addNickname(message.getContent().substring(i, message.getContent().length() - 1));
+                            member.nickname_messages.add(message); //yes this is sloppy but i don't feel like making another getter method
+                            //System.out.println(member.nicknames);
+                        } else if ((message.getContent().contains(" set his own nickname to ")
+                                || message.getContent().contains(" set her own nickname to "))
+                                && message.getSender() == member){
+                            int i = message.getContent().indexOf(
+                                    " own nickname to ") + 17;
                             member.addNickname(message.getContent().substring(i, message.getContent().length()-1));
+                            member.nickname_messages.add(message); //yes this is sloppy but i don't feel like making another getter method
                             //System.out.println(member.nicknames);
                         } else if (message.getContent().contains(" set your nickname to ") &&
-                                member.getFirstname().equals("Dylan")){
+                                member.getFirstname().equals("Dylan")){ // when using other peoples data, generalize this to their name
                             int i = message.getContent().indexOf("set your nickname to ") + 21;
                             member.addNickname(message.getContent().substring(i, message.getContent().length()-1));
+                            member.nickname_messages.add(message);
                         }
                     }
                 }
@@ -116,15 +128,41 @@ public class Chat {
 
     public void print_msgs(){
         for (Message m : messages){
-            System.out.println(m.getTimestampFull());
-            System.out.println(m.getSenderName()+ ": " + m.getContent());
-            if (m.getReacts() != null) {
-                for (Reaction react : m.getReacts()) {
-                    System.out.println("\t" + react.getActorName() + " reacted with a " + react.vibe);
-                }
-            }
-            System.out.println("\n");
+            System.out.println(fullmsg_toString(m));
         }
+    }
+
+    public String fullmsg_toString(Message m){
+        String s = "";
+        s += m.getTimestampFull() + "\n";
+        s += m.getSenderName()+ ": ";
+        if (m.getPhoto() != null)
+                s += m.getPhoto() + "\n";
+        if (m.getVideo() != null)
+            s += m.getVideo() + "\n";
+        if (m.getGif() != null)
+            s += m.getGif() + "\n";
+        if (m.getContent() != null)
+            s += m.getContent() + "\n";
+        if (m.getReacts() != null) {
+            for (Reaction react : m.getReacts()) {
+                s += "\t" + react.getActorName() + " reacted with a " + react.vibe + "\n";
+            }
+        }
+        return s;
+    }
+
+    public String msg_toString(Message m){
+        String s = "";
+        if (m.getVideo() != null)
+            s += m.video;
+        if (m.getGif() != null)
+            s += m.gif;
+        if (m.getPhoto() != null)
+            s += m.photo;
+        if (m.getContent() != null)
+            s += m.content;
+        return s;
     }
 
     public static void main(String[] args) throws FileNotFoundException {
